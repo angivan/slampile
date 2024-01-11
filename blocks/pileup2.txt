@@ -1,0 +1,6 @@
+baiFile = paste(bamFile, '.bai', sep='')
+pileFile = paste(bamFile, '.pileup.csv', sep='')
+
+## run and save fileup
+res <- pileup(bamFile, index=baiFile, scanBamParam=sbp, pileupParam=p_param)
+write.csv(res, file = pileFile)

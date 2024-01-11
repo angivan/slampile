@@ -1,0 +1,8 @@
+SLAM-PILE is dependent on following packages or software: 
+Rsamtools (R language), pandas (python language), samtools.
+
+To use SLAM-PILE, please change following filenames at the very top of "run_slampile.py" to your real filenames.
+'''INPUTs'''
+bam_filename = 'e.g. x.bam'
+gtf_filename = 'e.g. hg38_transcriptome.gtf'
+fa_filename =  'e.g. hg38.fa'

@@ -1,0 +1,92 @@
+'''
+inputs: gtf, fa, pileup output file
+output: T to C conversion statistic from pileup
+'''
+
+import pandas as pd
+
+def get_ensg(string):
+    return string.split(';')[0].split(' ')[1][1:-1]
+
+def parse_location(location):
+    chromosome, start, end = location.split(':')[0], int(location.split(':')[1].split('-')[0]), int(location.split(':')[1].split('-')[1])
+    return chromosome, start, end
+
+def get_sequence_from_ensg(ensg, ensg_location_dic, ch_chf_dic, chrs_fa_sequence_dic):
+    test_location = ensg_location_dic[ensg]
+    chromosome, start, end = parse_location(test_location)
+    chromosome = ch_chf_dic[chromosome]#switch to fa chromosome
+    sequence = chrs_fa_sequence_dic[chromosome][start-1:end]
+    return sequence
+
+def get_sequence_from_location(location, ch_chf_dic, chrs_fa_sequence_dic):
+    chromosome, start, end = parse_location(location)
+    chromosome = ch_chf_dic[chromosome]#switch to fa chromosome
+    sequence = chrs_fa_sequence_dic[chromosome][start-1:end]
+    return sequence
+
+def get_Tcontent(sequence):
+    Tcontent = 0
+    for base in sequence:
+        if base == 'T':
+            Tcontent += 1
+    return Tcontent
+
+def base_checker(position, chromosome_sequence, base='T'):
+    fa_base = chromosome_sequence[position-1]
+    if fa_base == base:
+        return True
+    else:
+        return False
+    
+def get_pileup_count(sel_df2, conversion=False):
+    if conversion==True:
+        sel_df2 = sel_df2[sel_df2['nucleotide'] == 'C']
+    else:
+        pass
+    count = sum(sel_df2['count'])
+    return count
+
+def bisect_search(value_list, target_value, lower_index, upper_index, mode = 'find_end'):
+
+    '''this is a recursive funciton to find the index of target_value in a sorted ascending value_list.
+        
+        if target_value doesn't exist in list:
+            if mode = 'find_end': return the index with maximum value < target_value;
+            if mode = 'find_start': return the index with minimum value > target_value;'''
+
+    try:
+        if value_list[lower_index] == target_value:
+            return lower_index
+        if value_list[upper_index] == target_value:
+            return upper_index
+        else:
+            if upper_index - lower_index == 0:# the ensg doesn't have read
+                return lower_index
+            if upper_index - lower_index == 1:
+                if mode == 'find_end':
+                    if value_list[upper_index] < target_value:
+                        return upper_index
+                    else:
+                        return lower_index
+                if mode == 'find_start':
+                    if value_list[lower_index] > target_value:
+                        return lower_index
+                    else:
+                        return upper_index
+            else:
+                mid_index = int((lower_index + upper_index)/2)
+                if value_list[mid_index] == target_value:
+                    return mid_index
+                else:
+                    if value_list[mid_index] > target_value:
+                        upper_index = mid_index
+                    else:
+                        lower_index = mid_index
+                    return bisect_search(value_list, target_value, lower_index, upper_index, mode = mode)
+    except IndexError:
+        return -1
+
+
+
+'''INPUTs'''
