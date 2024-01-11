@@ -1,4 +1,4 @@
-SLAM-PILE should be execulted in a Linux enviroment, and it is dependent on following packages or softwares: 
+SLAM-PILE should be executed in a Linux enviroment, and it is dependent on following packages or softwares: 
 R, Python 3, Rsamtools (R language), pandas (python language), samtools.
 
 To use SLAM-PILE, please change following filenames at the very top of "run_slampile.py" to your real filenames.
